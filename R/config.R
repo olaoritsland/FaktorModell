@@ -1,0 +1,1 @@
+riingo::riingo_set_token("060655f05a42949d04a03c1d6660e89eb2131bb1")
