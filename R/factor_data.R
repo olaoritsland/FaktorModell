@@ -129,25 +129,7 @@ prediction %>%
   theme_light()
 
 # Create decile plot
-ci = 0.05
-decile_data <- prediction %>% 
-  mutate(decile = ntile(estimate, 10)) %>%
-  group_by(decile, add = TRUE) %>%
-  summarise(mean_estimate = mean(estimate),
-            mean_truth = mean(truth),
-            sd_estimate = sd(estimate),
-            n_estimate = n()) %>%
-  mutate(se_estimate = sd_estimate / sqrt(n_estimate),
-         lower.ci_estimate = mean_estimate - qt(1 - (ci / 2), n_estimate - 1) * se_estimate,
-         upper.ci_estimate = mean_estimate + qt(1 - (ci / 2), n_estimate - 1) * se_estimate) %>%
-  select(-sd_estimate,-se_estimate) %>% 
-  pivot_longer(-c(decile, n_estimate))
-
-
-decile_data %>%
-  ggplot(aes(decile, value, color = name)) +
-  geom_line(size = 1.1) +
-  theme_light()
+decile_plot(model = model, test_data_prepped = df_test, test_data_raw = df_test_raw, response_var = returns_log, ci = 0.05)
   
 
 
