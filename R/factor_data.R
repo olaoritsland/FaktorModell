@@ -2,30 +2,14 @@
 library(tidyquant)
 library(tidymodels)
 
+# tickers ---------------------------------------------------------------------------------------
+tickers = "NHY"
+
 # get stock data --------------------------------------------------------------------------------
-
-tickers <- c("EQNR", "NHY")
-
-returns <- tickers %>% 
-  tq_get() %>% 
-  select(symbol, date, close) %>% 
-  group_by(symbol) %>% 
-  mutate(returns = close - lag(close),
-         returns_log = log(close) - log(lag(close)))
+returns <- get_stock_data(tickers)
 
 # get factor data -------------------------------------------------------------------------------
-url <- "http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Global_5_Factors_Daily_CSV.zip"
-csv_file <- "Global_5_Factors_Daily.csv"
-
-temp <- tempfile()
-download.file(url, temp, quiet = TRUE)
-
-factors <- 
-  read_csv(unz(temp, csv_file), skip = 6) %>% 
-  rename(date = X1, mkt = `Mkt-RF`) %>%
-  rename_at(c("SMB", "HML", "RMW", "CMA", "RF"), .funs = tolower) %>% 
-  mutate(date = lubridate::ymd(date)) %>%
-  mutate_if(is.numeric, funs(. / 100)) 
+factors <- get_factor_data()
 
 
 # join data -------------------------------------------------------------------------------------
@@ -34,7 +18,7 @@ df <- returns %>%
   na.omit()
 
 # Plot returns ----------------------------------------------------------------------------------
-plot_returns <- function(.data, ticker, return_var) {
+# plot_returns <- function(.data, ticker, return_var) {
   
   mean <- returns %>% 
     filter(symbol == {{ticker}}) %>% 
@@ -49,13 +33,14 @@ plot_returns <- function(.data, ticker, return_var) {
   #geom_vline(xintercept = sd(returns$returns, na.rm = T)) +
   theme_light()
 }
-plot_returns(returns, ticker = tickers[1], return_var = returns_log)
-plot_returns(returns, ticker = tickers[1], return_var = returns)
+# plot_returns(returns, ticker = tickers[1], return_var = returns_log)
+# plot_returns(returns, ticker = tickers[1], return_var = returns)
 map(.x = tickers, .f = ~plot_returns(ticker = ., .data = returns, return_var = returns_log))
+map(.x = tickers, .f = ~plot_returns(ticker = ., .data = returns, return_var = returns))
 
 # Plot vol --------------------------------------------------------------------------------------
 returns %>% 
-  filter(symbol == "EQNR") %>% 
+  filter(symbol == tickers) %>% 
   ggplot(aes(date, returns)) +
   geom_bar(stat = 'identity') +
   #facet_grid(symbol ~ ., scales = "free")
