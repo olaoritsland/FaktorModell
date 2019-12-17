@@ -1,6 +1,7 @@
 # packages---------------------------------------------------------------------------------------
 library(tidyquant)
 library(tidymodels)
+theme_set(theme_bw())
 
 # functions -------------------------------------------------------------------------------------
 source("scripts/load_functions.R")
@@ -14,6 +15,8 @@ returns <- get_stock_data(tickers)
 # get factor data -------------------------------------------------------------------------------
 factors <- get_factor_data()
 
+# plot factor data ------------------------------------------------------------------------------
+plot_factor_returns_cum(.data = factors)
 
 # join data -------------------------------------------------------------------------------------
 df <- returns %>%
@@ -93,7 +96,6 @@ plot_pred_truth_dist(.data = prediction)
 # Create decile plot
 decile_plot(model = model, test_data_prepped = df_test, test_data_raw = df_test_raw, response_var = returns_log, ci = 0.05)
   
-
 
 
 
