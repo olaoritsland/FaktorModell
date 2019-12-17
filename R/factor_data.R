@@ -3,7 +3,7 @@ library(tidyquant)
 library(tidymodels)
 
 # tickers ---------------------------------------------------------------------------------------
-tickers = "NHY"
+tickers = c("EQNR", "NHY")
 
 # get stock data --------------------------------------------------------------------------------
 returns <- get_stock_data(tickers)
@@ -18,33 +18,12 @@ df <- returns %>%
   na.omit()
 
 # Plot returns ----------------------------------------------------------------------------------
-# plot_returns <- function(.data, ticker, return_var) {
-  
-  mean <- returns %>% 
-    filter(symbol == {{ticker}}) %>% 
-    summarise(mean = mean({{return_var}}, na.rm = T)) %>% 
-    pull(mean)
-  
-.data %>% 
-  filter(symbol == {{ticker}}) %>% 
-  ggplot(aes({{return_var}})) + 
-  geom_density(fill = 'forestgreen', alpha = .2) + 
-  geom_vline(xintercept = mean, linetype = "dashed") +
-  #geom_vline(xintercept = sd(returns$returns, na.rm = T)) +
-  theme_light()
-}
-# plot_returns(returns, ticker = tickers[1], return_var = returns_log)
-# plot_returns(returns, ticker = tickers[1], return_var = returns)
 map(.x = tickers, .f = ~plot_returns(ticker = ., .data = returns, return_var = returns_log))
 map(.x = tickers, .f = ~plot_returns(ticker = ., .data = returns, return_var = returns))
 
 # Plot vol --------------------------------------------------------------------------------------
-returns %>% 
-  filter(symbol == tickers) %>% 
-  ggplot(aes(date, returns)) +
-  geom_bar(stat = 'identity') +
-  #facet_grid(symbol ~ ., scales = "free")
-  theme_light()
+#plot_vol(returns, ticker = tickers[1])
+map(.x = tickers, .f = ~plot_vol(ticker = ., .data = returns))
 
 
 # Model -----------------------------------------------------------------------------------------
@@ -106,12 +85,7 @@ model$fit %>%
   theme_light()
 
 # Plot predictions vs. truth
-prediction %>% 
-  select(truth, estimate, date) %>% 
-  pivot_longer(-date) %>% 
-  ggplot(aes(value, fill = name)) +
-  geom_density(alpha = .3) +
-  theme_light()
+plot_pred_truth_dist(.data = prediction)
 
 # Create decile plot
 decile_plot(model = model, test_data_prepped = df_test, test_data_raw = df_test_raw, response_var = returns_log, ci = 0.05)
