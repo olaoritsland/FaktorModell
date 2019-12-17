@@ -2,6 +2,9 @@
 library(tidyquant)
 library(tidymodels)
 
+# functions -------------------------------------------------------------------------------------
+source("scripts/load_functions.R")
+
 # tickers ---------------------------------------------------------------------------------------
 tickers = c("EQNR", "NHY")
 
