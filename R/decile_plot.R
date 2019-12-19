@@ -1,5 +1,5 @@
 
-decile_plot <- function(model, test_data_prepped, test_data_raw, response_var, ci, theme = theme_bw()) {
+decile_plot <- function(model, test_data_prepped, test_data_raw, response_var, ci) {
   
   # predict and create df
   prediction <- predict(model, test_data_prepped) %>%
@@ -29,6 +29,5 @@ decile_plot <- function(model, test_data_prepped, test_data_raw, response_var, c
   # Plot data
   decile_data %>%
     ggplot(aes(decile, value, color = name)) +
-    geom_line(size = 1) +
-    theme
+    geom_line(size = 1)
 }

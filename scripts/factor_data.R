@@ -1,13 +1,14 @@
 # packages---------------------------------------------------------------------------------------
 library(tidyquant)
 library(tidymodels)
-theme_set(theme_bw())
+library(ggthemes)
+theme_set(theme_clean())
 
 # functions -------------------------------------------------------------------------------------
 source("scripts/load_functions.R")
 
-# tickers ---------------------------------------------------------------------------------------
-tickers = c("EQNR", "NHY")
+# tickers (AMEX, NYSE or NASDAQ)c----------------------------------------------------------------
+tickers = c("TSLA")
 
 # get stock data --------------------------------------------------------------------------------
 returns <- get_stock_data(tickers)
@@ -18,12 +19,15 @@ factors <- get_factor_data()
 # plot factor data ------------------------------------------------------------------------------
 plot_factor_returns_cum(.data = factors)
 
+# plot close, rolling sd and mean----------------------------------------------------------------
+map(.x = tickers, .f = ~plot_roll(ticker = ., .data = returns))
+
 # join data -------------------------------------------------------------------------------------
 df <- returns %>%
   left_join(factors, by = "date") %>% 
   na.omit()
 
-# Plot returns ----------------------------------------------------------------------------------
+# Plot distribution of returns ------------------------------------------------------------------
 map(.x = tickers, .f = ~plot_returns(ticker = ., .data = returns, return_var = returns_log))
 map(.x = tickers, .f = ~plot_returns(ticker = ., .data = returns, return_var = returns))
 
@@ -36,7 +40,7 @@ map(.x = tickers, .f = ~plot_vol(ticker = ., .data = returns))
 
 # Select stock
 df_filtered <- df %>% 
-  filter(symbol == "EQNR")
+  filter(symbol == tickers[1])
 
 # Split into train and test
 df_split     <- initial_split(df_filtered)
@@ -86,9 +90,8 @@ prediction %>%
 
 # Pdp plot
 model$fit %>%
-  pdp::partial(pred.var = "cma", train = df_train) %>%
-  autoplot() +
-  theme_light()
+  pdp::partial(pred.var = "mkt", train = df_train) %>%
+  autoplot()
 
 # Plot predictions vs. truth
 plot_pred_truth_dist(.data = prediction)
