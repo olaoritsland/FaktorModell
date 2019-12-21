@@ -8,7 +8,7 @@ theme_set(theme_clean())
 source("scripts/load_functions.R")
 
 # tickers (AMEX, NYSE or NASDAQ)c----------------------------------------------------------------
-tickers = c("MS", "JPM")
+tickers = "AAPL"
 
 # get stock data --------------------------------------------------------------------------------
 returns <- get_stock_data(tickers)
@@ -35,6 +35,9 @@ map(.x = tickers, .f = ~plot_returns(ticker = ., .data = returns, return_var = r
 #plot_vol(returns, ticker = tickers[1])
 map(.x = tickers, .f = ~plot_vol(ticker = ., .data = returns))
 
+# Plot risk reward ------------------------------------------------------------------------------
+plot_risk_return(index = "SP500", sharpe = TRUE)
+plot_risk_return(index = "DOW", sortino = TRUE)
 
 # Model -----------------------------------------------------------------------------------------
 

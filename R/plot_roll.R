@@ -26,5 +26,6 @@ plot_roll <- function(.data, ticker, width = 200) {
   plot_data %>% 
     pivot_longer(-date) %>% 
     ggplot(aes(x = date, y = value, color = name)) +
-    geom_line()
+    geom_line() +
+    scale_color_ptol()
 }
