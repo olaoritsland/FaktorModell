@@ -8,7 +8,7 @@ theme_set(theme_clean())
 source("scripts/load_functions.R")
 
 # tickers (AMEX, NYSE or NASDAQ)c----------------------------------------------------------------
-tickers = c("TSLA")
+tickers = c("MS", "JPM")
 
 # get stock data --------------------------------------------------------------------------------
 returns <- get_stock_data(tickers)
